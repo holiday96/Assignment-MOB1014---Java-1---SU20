@@ -97,7 +97,7 @@ public class Main {
 	 */
 	public static void XuatDanhSachNhanVien() {
 		System.out.println("\n======== DANH SÁCH NHÂN VIÊN ========");
-		danhSachNhanVien.keySet().forEach((i) -> {
+		danhSachNhanVien.keySet().forEach(i -> {
 			System.out.println("\nMã Nhân viên: " + i);
 			XuatNhanVien(i);
 		});
@@ -169,10 +169,8 @@ public class Main {
 
 		// Tạo một LinkedHashMap và put entry từ List đã sắp xếp sang
 		LinkedHashMap<String, NhanVien> sortedMap = new LinkedHashMap<>(listEntries.size());
-//		for (Entry<String, NhanVien> entry : listEntries) {
-//			sortedMap.put(entry.getKey(), entry.getValue());
-//		}
-		listEntries.forEach((Entry<String, NhanVien> entry) -> sortedMap.put(entry.getKey(), entry.getValue()));
+		listEntries.forEach(entry -> sortedMap.put(entry.getKey(), entry.getValue()));
+		
 		System.out.println("Sắp xếp nhân viên thành công");
 		System.out.println("\n======== DANH SÁCH NHÂN VIÊN SAU KHI SẮP XẾP ========");
 		Set<Entry<String, NhanVien>> sortedEntries = sortedMap.entrySet();
@@ -181,7 +179,6 @@ public class Main {
 			System.out.println("Họ tên: " + mapping.getValue().getHoTen());
 			System.out.println("Lương cơ bản: " + mapping.getValue().getLuongCoBan());
 		}
-
 	}
 
 	/**
@@ -201,7 +198,7 @@ public class Main {
 
 		// Tạo một LinkedHashMap và put entry từ List đã sắp xếp sang
 		LinkedHashMap<String, NhanVien> descListSalary = new LinkedHashMap<>(listEntries.size());
-		listEntries.forEach((entry) -> descListSalary.put(entry.getKey(), danhSachNhanVien.get(entry.getKey())));
+		listEntries.forEach(entry -> descListSalary.put(entry.getKey(), danhSachNhanVien.get(entry.getKey())));
 
 		System.out.println("Sắp xếp nhân viên thành công");
 		System.out.println("\n======== DANH SÁCH NHÂN VIÊN SAU KHI SẮP XẾP ========");
@@ -236,7 +233,7 @@ public class Main {
 
 		// Tạo một LinkedHashMap và put entry từ List đã sắp xếp sang
 		LinkedHashMap<String, NhanVien> descListSalary = new LinkedHashMap<>(listEntries.size());
-		listEntries.forEach((entry) -> descListSalary.put(entry.getKey(), danhSachNhanVien.get(entry.getKey())));
+		listEntries.forEach(entry -> descListSalary.put(entry.getKey(), danhSachNhanVien.get(entry.getKey())));
 
 		System.out.println("\n======== TOP 5 NHÂN VIÊN CÓ THU NHẬP CAO NHẤT CÔNG TY ========");
 		Set<Entry<String, NhanVien>> sortedSalary = descListSalary.entrySet();
