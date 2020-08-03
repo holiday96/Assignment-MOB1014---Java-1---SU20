@@ -97,10 +97,10 @@ public class Main {
 	 */
 	public static void XuatDanhSachNhanVien() {
 		System.out.println("\n======== DANH SÁCH NHÂN VIÊN ========");
-		for (String i : danhSachNhanVien.keySet()) {
+		danhSachNhanVien.keySet().forEach((i) -> {
 			System.out.println("\nMã Nhân viên: " + i);
 			XuatNhanVien(i);
-		}
+		});
 	}
 
 	public static void XuatNhanVien(String key) {
@@ -161,27 +161,18 @@ public class Main {
 		// Khởi tạo 1 set entries
 		Set<Entry<String, NhanVien>> entries = danhSachNhanVien.entrySet();
 
-		// Tạo custom Comparator
-		Comparator<Entry<String, NhanVien>> comparator = new Comparator<Entry<String, NhanVien>>() {
-			@Override
-			public int compare(Entry<String, NhanVien> o1, Entry<String, NhanVien> o2) {
-				String v1 = o1.getValue().getHoTen();
-				String v2 = o2.getValue().getHoTen();
-				return v1.compareTo(v2);
-			}
-		};
-
 		// Convert Set to List
 		List<Entry<String, NhanVien>> listEntries = new ArrayList<>(entries);
 
 		// Sắp xếp List
-		Collections.sort(listEntries, comparator);
+		Collections.sort(listEntries, (o1, o2) -> o1.getValue().getHoTen().compareTo(o2.getValue().getHoTen()));
 
 		// Tạo một LinkedHashMap và put entry từ List đã sắp xếp sang
 		LinkedHashMap<String, NhanVien> sortedMap = new LinkedHashMap<>(listEntries.size());
-		for (Entry<String, NhanVien> entry : listEntries) {
-			sortedMap.put(entry.getKey(), entry.getValue());
-		}
+//		for (Entry<String, NhanVien> entry : listEntries) {
+//			sortedMap.put(entry.getKey(), entry.getValue());
+//		}
+		listEntries.forEach((Entry<String, NhanVien> entry) -> sortedMap.put(entry.getKey(), entry.getValue()));
 		System.out.println("Sắp xếp nhân viên thành công");
 		System.out.println("\n======== DANH SÁCH NHÂN VIÊN SAU KHI SẮP XẾP ========");
 		Set<Entry<String, NhanVien>> sortedEntries = sortedMap.entrySet();
@@ -201,26 +192,17 @@ public class Main {
 		// Khởi tạo 1 Set các entry chứa các cặp key-value của HashMap
 		Set<Entry<String, Double>> entriesSalary = listSalary.entrySet();
 
-		// Tạo custom Comparator
-		Comparator<Entry<String, Double>> comparato = new Comparator<Map.Entry<String, Double>>() {
-			@Override
-			public int compare(Entry<String, Double> o1, Entry<String, Double> o2) {
-				return o1.getValue() > o2.getValue() ? 1 : -1;
-			}
-		};
-
 		// Convert Set to List
 		List<Entry<String, Double>> listEntries = new ArrayList<Map.Entry<String, Double>>(entriesSalary);
 
 		// Sort
-		Collections.sort(listEntries, comparato); // sortAscending
+		Collections.sort(listEntries, (o1, o2) -> (int) (o1.getValue() - o2.getValue())); // sortAscending
 //		Collections.reverse(listEntries); // sortDescending
 
 		// Tạo một LinkedHashMap và put entry từ List đã sắp xếp sang
 		LinkedHashMap<String, NhanVien> descListSalary = new LinkedHashMap<>(listEntries.size());
-		for (Entry<String, Double> entry : listEntries) {
-			descListSalary.put(entry.getKey(), danhSachNhanVien.get(entry.getKey()));
-		}
+		listEntries.forEach((entry) -> descListSalary.put(entry.getKey(), danhSachNhanVien.get(entry.getKey())));
+
 		System.out.println("Sắp xếp nhân viên thành công");
 		System.out.println("\n======== DANH SÁCH NHÂN VIÊN SAU KHI SẮP XẾP ========");
 		Set<Entry<String, NhanVien>> sortedSalary = descListSalary.entrySet();
@@ -245,26 +227,17 @@ public class Main {
 		// Khởi tạo 1 Set các entry chứa các cặp key-value của HashMap
 		Set<Entry<String, Double>> entriesSalary = listSalary.entrySet();
 
-		// Tạo custom Comparator
-		Comparator<Entry<String, Double>> comparato = new Comparator<Map.Entry<String, Double>>() {
-			@Override
-			public int compare(Entry<String, Double> o1, Entry<String, Double> o2) {
-				return o1.getValue() > o2.getValue() ? 1 : -1;
-			}
-		};
-
 		// Convert Set to List
 		List<Entry<String, Double>> listEntries = new ArrayList<Map.Entry<String, Double>>(entriesSalary);
 
 		// Sort
-		Collections.sort(listEntries, comparato); // sortAscending
+		Collections.sort(listEntries, (o1, o2) -> (int) (o1.getValue() - o2.getValue())); // sortAscending
 		Collections.reverse(listEntries); // sortDescending
 
 		// Tạo một LinkedHashMap và put entry từ List đã sắp xếp sang
 		LinkedHashMap<String, NhanVien> descListSalary = new LinkedHashMap<>(listEntries.size());
-		for (Entry<String, Double> entry : listEntries) {
-			descListSalary.put(entry.getKey(), danhSachNhanVien.get(entry.getKey()));
-		}
+		listEntries.forEach((entry) -> descListSalary.put(entry.getKey(), danhSachNhanVien.get(entry.getKey())));
+
 		System.out.println("\n======== TOP 5 NHÂN VIÊN CÓ THU NHẬP CAO NHẤT CÔNG TY ========");
 		Set<Entry<String, NhanVien>> sortedSalary = descListSalary.entrySet();
 		int i = 0;
@@ -363,5 +336,4 @@ public class Main {
 	public static void main(String[] args) {
 		Menu();
 	}
-
 }
