@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,6 +13,8 @@ import java.util.Map.Entry;
 
 public class Main {
 	static HashMap<String, NhanVien> danhSachNhanVien = new HashMap<>();
+	static HashMap<String, Double> listSalary = new HashMap<>(); // Chứa key NhanVien - value Lương NhanVien
+	static Scanner sc = new Scanner(System.in);
 
 	/**
 	 * 1/ Nhập Danh sách Nhân viên
@@ -23,7 +24,7 @@ public class Main {
 			System.out.println("\n======== NHÂN VIÊN HÀNH CHÍNH ========");
 
 			System.out.print("\nNhập Mã Nhân viên: ");
-			String maNV = new Scanner(System.in).nextLine();
+			String maNV = sc.nextLine();
 
 			if (danhSachNhanVien.containsKey(maNV)) {
 				System.out.println("\nMã Nhân viên đã tồn tại! Mời nhập lại!!");
@@ -33,6 +34,7 @@ public class Main {
 			NhanVienHanhChinh nvhc = new NhanVienHanhChinh(null, 0, 0);
 			nvhc.insertNV();
 			danhSachNhanVien.put(maNV, nvhc);
+			listSalary.put(maNV, nvhc.luong());
 			break;
 		}
 	}
@@ -42,7 +44,7 @@ public class Main {
 			System.out.println("\n======== NHÂN VIÊN KINH DOANH ========");
 
 			System.out.print("\nNhập Mã Nhân viên: ");
-			String maNV = new Scanner(System.in).nextLine();
+			String maNV = sc.nextLine();
 
 			if (danhSachNhanVien.containsKey(maNV)) {
 				System.out.println("\nMã Nhân viên đã tồn tại! Mời nhập lại!!");
@@ -52,6 +54,7 @@ public class Main {
 			NhanVienKinhDoanh nvkd = new NhanVienKinhDoanh(null, 0, 0);
 			nvkd.insertNV();
 			danhSachNhanVien.put(maNV, nvkd);
+			listSalary.put(maNV, nvkd.luong());
 			break;
 		}
 	}
@@ -64,7 +67,7 @@ public class Main {
 			System.out.println("0/ Quay lại Menu chính.");
 			System.out.print("\nNhập chức năng: ");
 
-			String o = new Scanner(System.in).nextLine();
+			String o = sc.nextLine();
 			;
 
 			switch (o) {
@@ -111,7 +114,7 @@ public class Main {
 	public static void TimKiemNhanVien() {
 		System.out.println("\n======== TÌM KIẾM NHÂN VIÊN ========");
 		System.out.print("\nNhập Mã Nhân viên cần tìm: ");
-		String key = new Scanner(System.in).nextLine();
+		String key = sc.nextLine();
 		if (danhSachNhanVien.containsKey(key)) {
 			System.out.println("\nĐã tìm thấy!!!\nMã Nhân viên: " + key);
 			XuatNhanVien(key);
@@ -125,7 +128,7 @@ public class Main {
 	public static void XoaNhanVien() {
 		System.out.println("\n======== XOÁ NHÂN VIÊN ========");
 		System.out.print("\nNhập Mã Nhân viên cần xoá: ");
-		String key = new Scanner(System.in).nextLine();
+		String key = sc.nextLine();
 		if (danhSachNhanVien.containsKey(key)) {
 			System.out.println("\nĐã tìm thấy Nhân viên chứa Mã: " + key);
 			danhSachNhanVien.remove(key);
@@ -140,7 +143,7 @@ public class Main {
 	public static void updateInfo() {
 		System.out.println("\n======== CẬP NHẬT THÔNG TIN NHÂN VIÊN ========");
 		System.out.print("\nNhập Mã Nhân viên cần cập nhật: ");
-		String key = new Scanner(System.in).nextLine();
+		String key = sc.nextLine();
 		if (danhSachNhanVien.containsKey(key)) {
 			System.out.println("\nĐã tìm thấy Nhân viên chứa Mã: " + key);
 			System.out.println("Bắt đầu Cập nhật!");
@@ -195,69 +198,90 @@ public class Main {
 	 */
 
 	public static Set<Entry<String, NhanVien>> SortByMoney() {
-		// Khởi tạo 1 set các entry
-		Set<Entry<String, NhanVien>> entries = danhSachNhanVien.entrySet();
+		// Khởi tạo 1 Set các entry chứa các cặp key-value của HashMap
+		Set<Entry<String, Double>> entriesSalary = listSalary.entrySet();
 
 		// Tạo custom Comparator
-		Comparator<Entry<String, NhanVien>> comparator = new Comparator<Entry<String, NhanVien>>() {
+		Comparator<Entry<String, Double>> comparato = new Comparator<Map.Entry<String, Double>>() {
 			@Override
-			public int compare(Entry<String, NhanVien> o1, Entry<String, NhanVien> o2) {
-				Double v1 = o1.getValue().getLuongCoBan();
-				Double v2 = o2.getValue().getLuongCoBan();
-				return v1.compareTo(v2);
+			public int compare(Entry<String, Double> o1, Entry<String, Double> o2) {
+				return o1.getValue() > o2.getValue() ? 1 : -1;
 			}
 		};
 
 		// Convert Set to List
-		List<Entry<String, NhanVien>> listEntries = new ArrayList<>(entries);
+		List<Entry<String, Double>> listEntries = new ArrayList<Map.Entry<String, Double>>(entriesSalary);
 
-		// Sắp xếp List
-		Collections.sort(listEntries, comparator);
+		// Sort
+		Collections.sort(listEntries, comparato); // sortAscending
+//		Collections.reverse(listEntries); // sortDescending
 
 		// Tạo một LinkedHashMap và put entry từ List đã sắp xếp sang
-		LinkedHashMap<String, NhanVien> sortedMap = new LinkedHashMap<>(listEntries.size());
-		for (Entry<String, NhanVien> entry : listEntries) {
-			sortedMap.put(entry.getKey(), entry.getValue());
+		LinkedHashMap<String, NhanVien> descListSalary = new LinkedHashMap<>(listEntries.size());
+		for (Entry<String, Double> entry : listEntries) {
+			descListSalary.put(entry.getKey(), danhSachNhanVien.get(entry.getKey()));
 		}
 		System.out.println("Sắp xếp nhân viên thành công");
 		System.out.println("\n======== DANH SÁCH NHÂN VIÊN SAU KHI SẮP XẾP ========");
-		Set<Entry<String, NhanVien>> sortedEntries = sortedMap.entrySet();
-		for (Entry<String, NhanVien> mapping : sortedEntries) {
+		Set<Entry<String, NhanVien>> sortedSalary = descListSalary.entrySet();
+		for (Entry<String, NhanVien> mapping : sortedSalary) {
 			System.out.println("\nMã Nhân viên: " + mapping.getKey());
 			System.out.println("Họ tên: " + mapping.getValue().getHoTen());
 			System.out.println("Lương cơ bản: " + mapping.getValue().getLuongCoBan());
+			for (Entry<String, Double> entry : listEntries) {
+				if (entry.getKey().equals(mapping.getKey())) {
+					System.out.println("Lương thu nhập: " + entry.getValue());
+					break;
+				}
+			}
 		}
-		return sortedEntries;
+		return sortedSalary;
 	}
 
 	/**
 	 * 8/ Xuất 5 nhân viên có thu nhập cao nhất công ty
 	 */
 	public static void TopNhanVien() {
-		//Convert Set đã sắp xếp tăng dần to List
-		List<Entry<String, NhanVien>> sortedMoney = new ArrayList<>(SortByMoney());
-		//Reverse List
-		Collections.reverse(sortedMoney);
-		//Tạo một LinkedHashMap và put entry từ List đã sắp xếp sang
-		LinkedHashMap<String, NhanVien> sortedMap = new LinkedHashMap<>(sortedMoney.size());
-		for (Entry<String, NhanVien> entry : sortedMoney) {
-			sortedMap.put(entry.getKey(), entry.getValue());
-		}
-//		Set<Entry<String, NhanVien>> sortedEntries = sortedMap.entrySet();
-//		for (int i = 0; i < 5; i++) {
-//			System.out.println("\nMã Nhân viên: " + sortedEntries..getKey());
-//			System.out.println("Họ tên: " + mapping.getValue().getHoTen());
-//			System.out.println("Lương cơ bản: " + mapping.getValue().getLuongCoBan());
-//		}
-		//VẪN SAIII
-		
-		Iterator<Map.Entry<String, NhanVien>> iterator = danhSachNhanVien.entrySet().iterator();
-		for (int i = 0; i < 5; i++) {
-			Map.Entry<String, NhanVien> entry = iterator.next();
-			System.out.println("Họ tên: " + danhSachNhanVien.get(entry.getKey()).getHoTen());
-			System.out.println("Lương cơ bản: " + danhSachNhanVien.get(entry.getKey()).getLuongCoBan());
-		}
+		// Khởi tạo 1 Set các entry chứa các cặp key-value của HashMap
+		Set<Entry<String, Double>> entriesSalary = listSalary.entrySet();
 
+		// Tạo custom Comparator
+		Comparator<Entry<String, Double>> comparato = new Comparator<Map.Entry<String, Double>>() {
+			@Override
+			public int compare(Entry<String, Double> o1, Entry<String, Double> o2) {
+				return o1.getValue() > o2.getValue() ? 1 : -1;
+			}
+		};
+
+		// Convert Set to List
+		List<Entry<String, Double>> listEntries = new ArrayList<Map.Entry<String, Double>>(entriesSalary);
+
+		// Sort
+		Collections.sort(listEntries, comparato); // sortAscending
+		Collections.reverse(listEntries); // sortDescending
+
+		// Tạo một LinkedHashMap và put entry từ List đã sắp xếp sang
+		LinkedHashMap<String, NhanVien> descListSalary = new LinkedHashMap<>(listEntries.size());
+		for (Entry<String, Double> entry : listEntries) {
+			descListSalary.put(entry.getKey(), danhSachNhanVien.get(entry.getKey()));
+		}
+		System.out.println("\n======== TOP 5 NHÂN VIÊN CÓ THU NHẬP CAO NHẤT CÔNG TY ========");
+		Set<Entry<String, NhanVien>> sortedSalary = descListSalary.entrySet();
+		int i = 0;
+		for (Entry<String, NhanVien> mapping : sortedSalary) {
+			if (i == 5)
+				break;
+			System.out.println("\nMã Nhân viên: " + mapping.getKey());
+			System.out.println("Họ tên: " + mapping.getValue().getHoTen());
+			System.out.println("Lương cơ bản: " + mapping.getValue().getLuongCoBan());
+			for (Entry<String, Double> entry : listEntries) {
+				if (entry.getKey().equals(mapping.getKey())) {
+					System.out.println("Lương thu nhập: " + entry.getValue());
+					break;
+				}
+			}
+			i++;
+		}
 	}
 
 	// Hàm check chuỗi chứa toàn bộ ký tự chữ hay k??
